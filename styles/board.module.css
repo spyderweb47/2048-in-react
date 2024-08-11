@@ -1,6 +1,36 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  padding: 0 20px; /* Adjust this for padding around the container */
+  box-sizing: border-box;
+}
+
+.board-wrapper {
+  display: grid;
+  /* Adjust the grid-template-columns to give significantly more space to the sidebar */
+  grid-template-columns: 1fr 3fr 1fr; /* Give more space to the sidebar */
+  width: 100%;
+}
+
+.sidebar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 20px;
+  margin: 60px;
+  height: 100%; /* Ensures the sidebar takes the full height of its container */
+  /* Add a min-width to ensure the sidebar does not shrink too much */
+  min-width: 300px; /* Adjust this value as needed */
+}
+
 .board {
   position: relative;
   width: calc(var(--pixel-size) * 8 * 4 + var(--pixel-size) * 5);
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .grid {
@@ -27,6 +57,39 @@
   top: 0;
   right: 0;
   bottom: 0;
+}
+
+.tileContainer {
+  position: relative;
+  top: 20px; /* Adjust this value to match the spacer */
+}
+
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+.popupContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.popupContent h2 {
+  margin-bottom: 20px;
+}
+
+.popupContent button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 @media (min-width: 512px) {

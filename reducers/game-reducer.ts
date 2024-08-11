@@ -9,6 +9,7 @@ type State = {
   tilesByIds: string[];
   hasChanged: boolean;
   score: number;
+  isGameOver: boolean;
 };
 type Action =
   | { type: "create_tile"; tile: Tile }
@@ -16,7 +17,9 @@ type Action =
   | { type: "move_up" }
   | { type: "move_down" }
   | { type: "move_left" }
-  | { type: "move_right" };
+  | { type: "move_right" }
+  | { type: "game_over" }
+  | { type: "reset_game" };
 
 function createBoard() {
   const board: string[][] = [];
@@ -34,7 +37,47 @@ export const initialState: State = {
   tilesByIds: [],
   hasChanged: false,
   score: 0,
+  isGameOver: false,
 };
+
+function checkGameOver(state: State): boolean {
+  const { board, tiles } = state;
+
+  // Check if there are any empty cells
+  for (let y = 0; y < tileCountPerDimension; y++) {
+    for (let x = 0; x < tileCountPerDimension; x++) {
+      if (isNil(board[y][x])) return false;
+    }
+  }
+
+  // Check if there are any possible merges
+  for (let y = 0; y < tileCountPerDimension; y++) {
+    for (let x = 0; x < tileCountPerDimension; x++) {
+      const tileId = board[y][x];
+      const currentTile = tiles[tileId];
+
+      if (currentTile) {
+        // Check right
+        if (x < tileCountPerDimension - 1) {
+          const rightTileId = board[y][x + 1];
+          if (rightTileId && currentTile.value === tiles[rightTileId].value) {
+            return false;
+          }
+        }
+
+        // Check down
+        if (y < tileCountPerDimension - 1) {
+          const downTileId = board[y + 1][x];
+          if (downTileId && currentTile.value === tiles[downTileId].value) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+}
 
 export default function gameReducer(
   state: State = initialState,
@@ -126,13 +169,18 @@ export default function gameReducer(
           }
         }
       }
-      return {
+
+      const newState = {
         ...state,
         board: newBoard,
         tiles: newTiles,
         hasChanged,
         score,
       };
+
+      return checkGameOver(newState)
+        ? { ...newState, isGameOver: true }
+        : newState;
     }
     case "move_down": {
       const newBoard = createBoard();
@@ -177,13 +225,18 @@ export default function gameReducer(
           }
         }
       }
-      return {
+
+      const newState = {
         ...state,
         board: newBoard,
         tiles: newTiles,
         hasChanged,
         score,
       };
+
+      return checkGameOver(newState)
+        ? { ...newState, isGameOver: true }
+        : newState;
     }
     case "move_left": {
       const newBoard = createBoard();
@@ -228,13 +281,18 @@ export default function gameReducer(
           }
         }
       }
-      return {
+
+      const newState = {
         ...state,
         board: newBoard,
         tiles: newTiles,
         hasChanged,
         score,
       };
+
+      return checkGameOver(newState)
+        ? { ...newState, isGameOver: true }
+        : newState;
     }
     case "move_right": {
       const newBoard = createBoard();
@@ -268,7 +326,7 @@ export default function gameReducer(
 
             newBoard[y][newX] = tileId;
             newTiles[tileId] = {
-              ...state.tiles[tileId],
+              ...currentTile,
               position: [newX, y],
             };
             previousTile = newTiles[tileId];
@@ -279,12 +337,29 @@ export default function gameReducer(
           }
         }
       }
-      return {
+
+      const newState = {
         ...state,
         board: newBoard,
         tiles: newTiles,
         hasChanged,
         score,
+      };
+
+      return checkGameOver(newState)
+        ? { ...newState, isGameOver: true }
+        : newState;
+    }
+    case "game_over": {
+      return {
+        ...state,
+        isGameOver: true,
+      };
+    }
+    case "reset_game": {
+      return {
+        ...initialState,
+        board: createBoard(), // Ensure the board is reset as well
       };
     }
     default:

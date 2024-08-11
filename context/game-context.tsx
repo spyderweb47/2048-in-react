@@ -17,6 +17,8 @@ export const GameContext = createContext({
   moveTiles: (_: MoveDirection) => {},
   getTiles: () => [] as Tile[],
   startGame: () => {},
+  isGameOver: false,
+  onGameOver: () => {},
 });
 
 export default function GameProvider({ children }: PropsWithChildren) {
@@ -60,9 +62,35 @@ export default function GameProvider({ children }: PropsWithChildren) {
     [dispatch],
   );
 
-  const startGame = () => {
+  const startGame = useCallback(() => {
+    dispatch({ type: "reset_game" });
     dispatch({ type: "create_tile", tile: { position: [0, 1], value: 2 } });
     dispatch({ type: "create_tile", tile: { position: [0, 2], value: 2 } });
+  }, [dispatch]);
+
+  const onGameOver = () => {
+    dispatch({ type: "game_over" });
+  };
+
+  const checkGameOver = () => {
+    if (getEmptyCells().length > 0) {
+      return false;
+    }
+
+    for (let x = 0; x < tileCountPerDimension; x++) {
+      for (let y = 0; y < tileCountPerDimension; y++) {
+        const currentTile = gameState.board[y][x];
+        if (
+          (x < tileCountPerDimension - 1 &&
+            currentTile === gameState.board[y][x + 1]) ||
+          (y < tileCountPerDimension - 1 &&
+            currentTile === gameState.board[y + 1][x])
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -70,6 +98,10 @@ export default function GameProvider({ children }: PropsWithChildren) {
       setTimeout(() => {
         dispatch({ type: "clean_up" });
         appendRandomTile();
+
+        if (checkGameOver()) {
+          dispatch({ type: "game_over" });
+        }
       }, mergeAnimationDuration);
     }
   }, [gameState.hasChanged]);
@@ -81,6 +113,8 @@ export default function GameProvider({ children }: PropsWithChildren) {
         getTiles,
         moveTiles,
         startGame,
+        isGameOver: gameState.isGameOver,
+        onGameOver,
       }}
     >
       {children}
