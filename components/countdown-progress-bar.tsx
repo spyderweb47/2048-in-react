@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 import styles from "@/styles/progress-bar.module.css";
 import { GameContext } from "@/context/game-context";
 
-const countdown_time = 5 ; // 5 in seconds
+const countdown_time = 30 ; // 5 in seconds
 export default function CountdownProgressBar({ targetNumber }: { targetNumber: number }) {
   const { isGameOver, onGameOver } = useContext(GameContext);
   const [timeLeft, setTimeLeft] = useState(countdown_time); // 30 seconds countdown
