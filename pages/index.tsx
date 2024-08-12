@@ -1,23 +1,23 @@
+// pages/index.tsx
 import Head from "next/head";
 import Image from "next/image";
 import Board from "@/components/board";
 import Score from "@/components/score";
+import Navbar from "@/components/Navbar"; // Import the Navbar component
 import styles from "@/styles/index.module.css";
 import AuthLayer from "@/components/AuthLayer";
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { WagmiProvider } from 'wagmi'
+import { WagmiProvider } from 'wagmi';
 import { arbitrum, mainnet } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
+import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 
-// 0. Setup queryClient
+// Setup queryClient and projectId
 const queryClient = new QueryClient();
-
-// 1. Get projectId from https://cloud.walletconnect.com
 const projectId = 'YOUR_PROJECT_ID_HERE';
 
-// 2. Set up chains and metadata
+// Set up chains and metadata
 const metadata = {
   name: '2048-dqn',
   description: '2048 Game',
@@ -25,20 +25,21 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const chains = [mainnet, arbitrum] as const
+const chains = [mainnet, arbitrum] as const;
 const config = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-})
+});
 
-// 3. Create modal
+// Create modal
 createWeb3Modal({
   metadata,
   wagmiConfig: config,
   projectId,
-  enableAnalytics: true // Optional - defaults to your Cloud configuration
-})
+  enableAnalytics: true,
+});
+
 export default function Home() {
   return (
     <div className={styles.twenty48}>
@@ -58,6 +59,9 @@ export default function Home() {
         <link rel="icon" type="image/png" sizes="32x32" href="favicon32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="favicon16.png" />
       </Head>
+      
+      <Navbar /> {/* Full-width Navbar */}
+
       <header>
         <h1>2048</h1>
         <Score />
