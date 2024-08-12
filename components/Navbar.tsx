@@ -12,10 +12,10 @@ const Navbar: React.FC = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.logo}>
-        <Link href="/">2048</Link>
-        <button onClick={toggleMenu} className={styles.menuButton}>
+        {/* <Link href="/">2048</Link> */}
+        {/* <button onClick={toggleMenu} className={styles.menuButton}>
           ☰
-        </button>
+        </button> */}
       </div>
       <w3m-button />
 {/* 

@@ -9,13 +9,13 @@ import AuthLayer from "@/components/AuthLayer";
 import React from 'react';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { WagmiProvider } from 'wagmi';
-import { arbitrum, mainnet } from 'wagmi/chains';
+import { avalanche, mainnet } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 
 // Setup queryClient and projectId
 const queryClient = new QueryClient();
-const projectId = 'YOUR_PROJECT_ID_HERE';
+const projectId = '46a9fea7e81247ecf561d667e4efccfa';
 
 // Set up chains and metadata
 const metadata = {
@@ -25,7 +25,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const chains = [mainnet, arbitrum] as const;
+const chains = [mainnet, avalanche] as const;
 const config = defaultWagmiConfig({
   chains,
   projectId,
