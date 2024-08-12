@@ -3,6 +3,7 @@ import Image from "next/image";
 import Board from "@/components/board";
 import Score from "@/components/score";
 import styles from "@/styles/index.module.css";
+import AuthLayer from "@/components/AuthLayer";
 
 export default function Home() {
   return (
@@ -28,7 +29,9 @@ export default function Home() {
         <Score />
       </header>
       <main>
-        <Board />
+        <AuthLayer>
+          <Board username={""} wallet={""} />
+        </AuthLayer>
       </main>
       <footer>
         <div className={styles.socials}>

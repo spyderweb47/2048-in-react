@@ -2,10 +2,16 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import { Tile as TileModel } from "@/models/tile";
 import styles from "@/styles/board.module.css";
 import Tile from "./tile";
-import CountdownProgressBar from "./countdown-progress-bar"; // Import the new component
+import CountdownProgressBar from "./countdown-progress-bar";
 import { GameContext } from "@/context/game-context";
 import MobileSwiper, { SwipeInput } from "./mobile-swiper";
-import Leaderboard from './Leaderboard'; // Import the Leaderboard component
+import Leaderboard from './Leaderboard';
+import axios from 'axios';
+
+interface BoardProps {
+  username: string; // Type for username
+  wallet: string;   // Type for wallet
+}
 
 function GameOverPopup({ onRestart }: { onRestart: () => void }) {
   const touchRef = useRef({ x: 0, y: 0, timeStamp: 0 });
@@ -48,11 +54,12 @@ function GameOverPopup({ onRestart }: { onRestart: () => void }) {
   );
 }
 
-export default function Board() {
+export default function Board({ username, wallet }: BoardProps) { // Apply the interface to the component
   const { getTiles, moveTiles, startGame, isGameOver, score } = useContext(GameContext);
   const initialized = useRef(false);
   const [showGameOver, setShowGameOver] = useState(false);
   const [targetNumber, setTargetNumber] = useState(2);
+  const [refreshLeaderboard, setRefreshLeaderboard] = useState(false); // Track leaderboard refresh
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -112,11 +119,25 @@ export default function Board() {
     ));
   };
 
-  const handleRestart = useCallback(() => {
+  const handleRestart = useCallback(async () => {
+    if (isGameOver) {
+      try {
+        const response = await axios.get(`/api/auth?wallet=${wallet}`);
+        const highScore = response.data.highScore;
+
+        if (!highScore || score > highScore) {
+          await axios.post('/api/auth', { wallet, username, score });
+        }
+        setRefreshLeaderboard(true); // Trigger leaderboard refresh
+      } catch (error) {
+        console.error("Error updating high score:", error);
+      }
+    }
+
     setShowGameOver(false);
     setTargetNumber(2);
     startGame(); // Properly reset and start the game
-  }, [startGame]);
+  }, [isGameOver, score, wallet, username, startGame]);
 
   useEffect(() => {
     if (initialized.current === false) {
@@ -151,7 +172,7 @@ export default function Board() {
   return (
     <div className={styles.container}>
       <div className={styles.sidebar}>
-      <Leaderboard />
+        <Leaderboard refresh={refreshLeaderboard} /> {/* Pass refresh prop */}
       </div>
       <MobileSwiper onSwipe={isGameOver ? () => {} : handleSwipe}>
         <div className={styles.board}>
@@ -166,7 +187,6 @@ export default function Board() {
       </MobileSwiper>
       <div className={styles.sidebar}>
         {/* You can add other components here in the future */}
-        {/* <Leaderboard /> */}
       </div>
     </div>
   );

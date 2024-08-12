@@ -9,8 +9,7 @@
 
 .board-wrapper {
   display: grid;
-  /* Adjust the grid-template-columns to give significantly more space to the sidebar */
-  grid-template-columns: 1fr 3fr 1fr; /* Give more space to the sidebar */
+  grid-template-columns: 1fr 3fr 1fr; /* Sidebar, Board, Sidebar */
   width: 100%;
 }
 
@@ -21,9 +20,8 @@
   background-color: #f0f0f0;
   padding: 20px;
   margin: 60px;
-  height: 100%; /* Ensures the sidebar takes the full height of its container */
-  /* Add a min-width to ensure the sidebar does not shrink too much */
-  min-width: 300px; /* Adjust this value as needed */
+  height: 100%;
+  min-width: 300px; /* Ensure the sidebar does not shrink too much */
 }
 
 .board {
@@ -110,4 +108,59 @@
   .tiles {
     margin: calc(var(--pixel-size) * 1);
   }
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board-wrapper > .board {
+    order: 1; /* Ensure the board comes first */
+  }
+
+  .board-wrapper > .sidebar:nth-child(1) {
+    order: 2; /* Left sidebar comes second */
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  .board-wrapper > .sidebar:nth-child(3) {
+    order: 3; /* Right sidebar comes last */
+    width: 100%;
+    margin: 20px 0;
+  }
+/* 
+  .board {
+   margin-bottom: 20px;
+  } */
+ 
+  .board {
+    order: 1; /* Ensure the board comes first */
+    margin-bottom: 20px;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    margin: 20px 0;
+  }
+
+  .sidebar:first-of-type {
+    order: 2; /* Left sidebar comes second */
+  }
+
+  .sidebar:last-of-type {
+    order: 3; /* Right sidebar comes last */
+  }
+
 }
