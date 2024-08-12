@@ -5,6 +5,7 @@
   height: 70vh;
   padding: 0 20px; /* Adjust this for padding around the container */
   box-sizing: border-box;
+  /* background-color: #f0f0f0; */
 }
 
 .board-wrapper {

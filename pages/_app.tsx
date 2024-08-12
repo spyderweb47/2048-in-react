@@ -5,7 +5,11 @@ import "@/styles/globals.css";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <GameProvider>
+      <w3m-button />
       <Component {...pageProps} />
+
     </GameProvider>
   );
 }
+
+

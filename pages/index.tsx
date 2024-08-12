@@ -4,7 +4,41 @@ import Board from "@/components/board";
 import Score from "@/components/score";
 import styles from "@/styles/index.module.css";
 import AuthLayer from "@/components/AuthLayer";
+import React, { ReactNode } from 'react';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
+import { WagmiProvider } from 'wagmi'
+import { arbitrum, mainnet } from 'wagmi/chains';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 
+// 0. Setup queryClient
+const queryClient = new QueryClient();
+
+// 1. Get projectId from https://cloud.walletconnect.com
+const projectId = 'YOUR_PROJECT_ID_HERE';
+
+// 2. Set up chains and metadata
+const metadata = {
+  name: '2048-dqn',
+  description: '2048 Game',
+  url: 'https://web3modal.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886']
+};
+
+const chains = [mainnet, arbitrum] as const
+const config = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+})
+
+// 3. Create modal
+createWeb3Modal({
+  metadata,
+  wagmiConfig: config,
+  projectId,
+  enableAnalytics: true // Optional - defaults to your Cloud configuration
+})
 export default function Home() {
   return (
     <div className={styles.twenty48}>
@@ -29,9 +63,13 @@ export default function Home() {
         <Score />
       </header>
       <main>
-        <AuthLayer>
-          <Board username={""} wallet={""} />
-        </AuthLayer>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <AuthLayer>
+              <Board username={""} wallet={""} />
+            </AuthLayer>
+          </QueryClientProvider>
+        </WagmiProvider>
       </main>
       <footer>
         <div className={styles.socials}>

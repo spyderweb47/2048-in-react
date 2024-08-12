@@ -1,46 +1,46 @@
-import React, { useEffect, useState, ReactNode } from "react";
-import { connectWallet, getWalletAddress } from "@/services/auth";
+import React, { useEffect, useState } from "react";
+import { useAccount } from 'wagmi';
 import axios from 'axios';
 
 interface AuthLayerProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 const AuthLayer: React.FC<AuthLayerProps> = ({ children }) => {
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [username, setUsernameState] = useState<string | null>(null);
-  const [wallet, setWalletState] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { address, isConnected } = useAccount();
 
   useEffect(() => {
-    async function checkAuth() {
-      const wallet = await getWalletAddress();
-      if (wallet) {
-        setWalletConnected(true);
-        setWalletState(wallet);
-        const response = await axios.get(`/api/auth?wallet=${wallet}`);
-        setUsernameState(response.data.username);
-      }
+    if (isConnected && address) {
+      // Fetch user data based on wallet address
+      axios.get(`/api/auth?wallet=${address}`)
+        .then(response => {
+          if (response.data.username) {
+            setUsername(response.data.username);
+          }
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error fetching user data:", error);
+          setLoading(false);
+        });
+    } else {
       setLoading(false);
     }
-    checkAuth();
-  }, []);
-
-  const handleConnectWallet = async () => {
-    const wallet = await connectWallet();
-    if (wallet) {
-      setWalletConnected(true);
-      setWalletState(wallet);
-      const response = await axios.get(`/api/auth?wallet=${wallet}`);
-      setUsernameState(response.data.username);
-    }
-  };
+  }, [isConnected, address]);
 
   const handleSetUsername = async (name: string) => {
-    const wallet = await getWalletAddress();
-    if (wallet) {
-      await axios.post('/api/auth', { wallet, username: name });
-      setUsernameState(name);
+    if (address) {
+      setLoading(true);
+      try {
+        await axios.post('/api/auth', { wallet: address, username: name });
+        setUsername(name);
+      } catch (error) {
+        console.error("Error setting username:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -48,27 +48,27 @@ const AuthLayer: React.FC<AuthLayerProps> = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  if (!walletConnected) {
-    return (
-      <div>
-        <button onClick={handleConnectWallet}>Connect Wallet</button>
-      </div>
-    );
+  if (!isConnected) {
+    return <div>Please connect your wallet to continue.</div>;
   }
 
   if (!username) {
     return (
       <div>
         <h2>Enter Username</h2>
-        <input type="text" placeholder="Enter username" onBlur={(e) => handleSetUsername(e.target.value)} />
+        <input
+          type="text"
+          placeholder="Enter username"
+          onBlur={(e) => handleSetUsername(e.target.value)}
+        />
       </div>
     );
   }
 
   return (
-    <>
-      {React.cloneElement(children as React.ReactElement<any>, { username, wallet })}
-    </>
+    <div>
+      {React.cloneElement(children as React.ReactElement<any>, { username, wallet: address })}
+    </div>
   );
 };
 

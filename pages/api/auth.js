@@ -23,15 +23,16 @@ export default async function handler(req, res) {
     const users = db.collection('users');
 
     switch (method) {
-      case 'POST':
+      case 'POST': {
         const { wallet, username, score } = req.body;
+
         if (!wallet || !username) {
-          res.status(400).json({ error: 'Missing wallet or username' });
-          return;
+          return res.status(400).json({ error: 'Missing wallet or username' });
         }
 
         if (score !== undefined) {
           const user = await users.findOne({ wallet });
+
           if (user) {
             if (!user.highScore || score > user.highScore) {
               await users.updateOne(
@@ -48,24 +49,29 @@ export default async function handler(req, res) {
           );
         }
 
-        res.status(200).json({ success: true });
-        break;
-      case 'GET':
+        return res.status(200).json({ success: true });
+      }
+      case 'GET': {
         const { wallet: walletQuery } = req.query;
+
         if (!walletQuery) {
-          res.status(400).json({ error: 'Missing wallet query parameter' });
-          return;
+          return res.status(400).json({ error: 'Missing wallet query parameter' });
         }
 
         const user = await users.findOne({ wallet: walletQuery });
-        res.status(200).json(user ? { username: user.username, highScore: user.highScore } : { username: null, highScore: null });
-        break;
+
+        return res.status(200).json(
+          user
+            ? { username: user.username, highScore: user.highScore }
+            : { username: null, highScore: null }
+        );
+      }
       default:
         res.setHeader('Allow', ['GET', 'POST']);
-        res.status(405).end(`Method ${method} Not Allowed`);
+        return res.status(405).end(`Method ${method} Not Allowed`);
     }
   } catch (error) {
     console.error('API Error:', error); // Log the error for debugging
-    res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
