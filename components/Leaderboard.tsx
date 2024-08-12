@@ -43,7 +43,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ refresh }) => {
         <span className={styles.column}>Name</span>
         <span className={styles.column}>Score</span>
       </div>
-      {players.map((player, index) => (
+      {players.slice(0, 7).map((player, index) => (
         <div key={player._id} className={styles.player}>
           <span className={styles.rank}>{index + 1}.</span>
           <img src={player.avatar || '/images/avatar.png'} alt={`${player.username}'s avatar`} className={styles.avatar} />

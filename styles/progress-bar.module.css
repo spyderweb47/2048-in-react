@@ -3,11 +3,22 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  background-color: #ece8e8;
 }
 
+
 .timeLeft {
-  flex-basis: 20%;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000000;
   text-align: center;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%; /* Ensures the SVG scales with the container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .progressBar {

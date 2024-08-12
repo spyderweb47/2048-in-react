@@ -9,6 +9,7 @@ interface AuthLayerProps {
 const AuthLayer: React.FC<AuthLayerProps> = ({ children }) => {
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSettingUsername, setIsSettingUsername] = useState(false); // New state to track username setting
   const { address, isConnected } = useAccount();
 
   useEffect(() => {
@@ -32,20 +33,20 @@ const AuthLayer: React.FC<AuthLayerProps> = ({ children }) => {
 
   const handleSetUsername = async (name: string) => {
     if (address) {
-      setLoading(true);
+      setIsSettingUsername(true); // Start loading when setting username
       try {
         await axios.post('/api/auth', { wallet: address, username: name });
         setUsername(name);
       } catch (error) {
         console.error("Error setting username:", error);
       } finally {
-        setLoading(false);
+        setIsSettingUsername(false); // Stop loading after username is set
       }
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (loading || isSettingUsername) {
+    return <div>Loading...</div>; // Show loading while fetching or setting username
   }
 
   if (!isConnected) {

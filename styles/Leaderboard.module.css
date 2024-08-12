@@ -61,3 +61,7 @@
     font-weight: 700;
     text-align: right;
 }
+
+.currentUser {
+    background-color: #f0f8ff; /* Light blue background to highlight the current user */
+  }

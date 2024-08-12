@@ -18,6 +18,8 @@ const Navbar: React.FC = () => {
         </button> */}
       </div>
       <w3m-button />
+      {/* <w3m-connect-button /> */}
+      {/* <w3m-account-button /> */}
 {/* 
       <ul className={`${styles.navLinks} ${isOpen ? styles.show : ''}`}>
         <li>
