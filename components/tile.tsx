@@ -10,7 +10,7 @@ import { Tile as TileProps } from "@/models/tile";
 import styles from "@/styles/tile.module.css";
 import usePreviousProps from "@/hooks/use-previous-props";
 
-export default function Tile({ position, value }: TileProps) {
+export default function Tile({ position, value, size = "normal" }: TileProps & { size?: "normal" | "small" }) {
   const isWideScreen = useMediaQuery({ minWidth: 512 });
   const containerWidth = isWideScreen
     ? containerWidthDesktop
@@ -33,7 +33,7 @@ export default function Tile({ position, value }: TileProps) {
   const style = {
     left: positionToPixels(position[0]),
     top: positionToPixels(position[1]),
-    transform: `scale(${scale})`,
+    transform: `scale(${size === "small" ? 0.5 : 1})`, // Adjust the size based on the "size" prop
     zIndex: value,
   };
 

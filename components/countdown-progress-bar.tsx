@@ -1,11 +1,20 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import styles from "@/styles/progress-bar.module.css";
+import tileStyles from "@/styles/tile.module.css";
 import { GameContext } from "@/context/game-context";
 
-const countdown_time = 30 ; // 5 in seconds
+// Define a mapping of target numbers to their respective countdown times
+const countdownTimes: Record<number, number> = {
+  4: 5,
+  8: 10,
+  16: 15,
+  32: 20, // Add more targets as needed
+  // Default to 30 seconds for any number not specified
+};
+
 export default function CountdownProgressBar({ targetNumber }: { targetNumber: number }) {
-  const { isGameOver, onGameOver } = useContext(GameContext);
-  const [timeLeft, setTimeLeft] = useState(countdown_time); // 30 seconds countdown
+  const { isGameOver, onGameOver, getTiles } = useContext(GameContext);
+  const [timeLeft, setTimeLeft] = useState(countdownTimes[targetNumber] || 30);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startTimer = () => {
@@ -24,7 +33,8 @@ export default function CountdownProgressBar({ targetNumber }: { targetNumber: n
   useEffect(() => {
     if (isGameOver) return;
 
-    setTimeLeft(countdown_time); // Reset to 30 seconds when the component mounts
+    const countdownTime = countdownTimes[targetNumber] || 30;
+    setTimeLeft(countdownTime);
     startTimer();
 
     return () => {
@@ -32,20 +42,47 @@ export default function CountdownProgressBar({ targetNumber }: { targetNumber: n
         clearInterval(intervalRef.current);
       }
     };
-  }, [isGameOver]);
+  }, [isGameOver, targetNumber]);
 
   useEffect(() => {
-    setTimeLeft(countdown_time); // Reset the timer when the target number changes
+    setTimeLeft(countdownTimes[targetNumber] || 30);
   }, [targetNumber]);
 
-  
-  let new_timeleft = timeLeft - 1
-  let new_progress_countdown = countdown_time -1 
-  const progress = (new_timeleft / new_progress_countdown) * 100;
+  // Determine the highest number on the board and calculate the next target
+  const getNextTarget = () => {
+    const tiles = getTiles();
+    const maxTileValue = Math.max(...tiles.map(tile => tile.value));
+    return maxTileValue * 2; // Next target is double the highest current tile
+  };
+
+  const progress = ((timeLeft - 1) / (countdownTimes[targetNumber] - 1)) * 100;
 
   return (
-    <div className={styles.progressBar}>
-      <div className={styles.progress} style={{ width: `${progress}%` }} />
+    <div className={styles.progressBarContainer}>
+      <div className={styles.timeLeft} style={{ flexBasis: "20%" }}>
+        {timeLeft > 60
+          ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s`
+          : `${timeLeft}s`}
+      </div>
+      <div className={styles.progressBar} style={{ flexBasis: "60%" }}>
+        <div className={styles.progress} style={{ 
+    width: `${progress}%`, 
+    animation: `reverseCountdown ${timeLeft}s linear` 
+  }} />
+      </div>
+      <div
+        className={`${tileStyles.tile} ${tileStyles[`tile${getNextTarget()}`]}`}
+        style={{
+          position: "relative", 
+          transform: "scale(0.5)",
+          flexBasis: "20%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {getNextTarget()}
+      </div>
     </div>
   );
 }

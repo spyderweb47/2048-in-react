@@ -25,7 +25,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 };
 
-const chains = [mainnet, avalanche] as const;
+const chains = [avalanche] as const;
 const config = defaultWagmiConfig({
   chains,
   projectId,

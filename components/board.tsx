@@ -177,7 +177,7 @@ export default function Board({ username, wallet }: BoardProps) { // Apply the i
       <MobileSwiper onSwipe={isGameOver ? () => {} : handleSwipe}>
         <div className={styles.board}>
           <CountdownProgressBar targetNumber={targetNumber} />
-          <div style={{ height: '20px' }}></div> {/* Spacer element */}
+          {/* <div style={{ height: '20px' }}></div> Spacer element */}
           <div className={styles.tileContainer}>
             <div className={styles.tiles}>{renderTiles()}</div>
             <div className={styles.grid}>{renderGrid()}</div>

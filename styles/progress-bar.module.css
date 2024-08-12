@@ -1,19 +1,55 @@
-/* progress-bar.module.css */
+.progressBarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.timeLeft {
+  flex-basis: 20%;
+  text-align: center;
+}
 
 .progressBar {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  height: 10px;
-  background-color: #ddd;
-  border-radius: 5px;
+  flex-basis: 60%;
+  height: 20px; /* Adjust the height as needed */
+  background-color: #e0e0e0; /* Background color of the progress bar container */
+  border-radius: 10px;
   overflow: hidden;
-  z-index: 9;
 }
 
 .progress {
   height: 100%;
-  background-color: #4caf50;
-  transition: width 1s linear; /* Ensure smooth transition */
+  width: 100%;
+  background-image: linear-gradient(
+    45deg,
+    rgb(252, 163, 17) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgb(252, 163, 17) 50%,
+    rgb(252, 163, 17) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-color: #FCBC51;
+  animation: reverseCountdown 6s linear; /* Replace 6s with the desired duration */
+}
+
+
+@keyframes reverseCountdown {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+
+
+.nextTarget {
+  flex-basis: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
